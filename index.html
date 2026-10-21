@@ -116,23 +116,6 @@
       </div>
     </section>
 
-    <!-- LISTENBRAINZ API SYNC & CONTROLS -->
-    <section class="bg-earth-100/50 dark:bg-earth-900/30 rounded-xl p-4 border border-earth-200 dark:border-earth-800 flex flex-col md:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-3 w-full md:w-auto">
-        <i data-lucide="radio" class="w-5 h-5 text-leaf-600 dark:text-leaf-400 shrink-0"></i>
-        <div class="text-xs">
-          <div class="font-semibold">ListenBrainz Live API Sync</div>
-          <div class="text-earth-600 dark:text-earth-400">Sync with MusicBrainz metadata</div>
-        </div>
-      </div>
-      <div class="flex items-center gap-2 w-full md:w-auto">
-        <input type="text" id="mbidInput" placeholder="ListenBrainz Playlist MBID / UUID..." class="flex-1 md:w-72 text-xs px-3 py-2 rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700 focus:outline-none focus:ring-1 focus:ring-leaf-500">
-        <button onclick="syncListenBrainz()" class="px-3 py-2 bg-earth-200 dark:bg-earth-800 hover:bg-earth-300 dark:hover:bg-earth-700 text-xs font-semibold rounded-lg transition-colors shrink-0 flex items-center gap-1.5">
-          <i data-lucide="refresh-cw" class="w-3.5 h-3.5" id="syncSpinner"></i> Fetch
-        </button>
-      </div>
-    </section>
-
     <!-- PLAYLIST EXPLORER & PLAYER -->
     <section id="playlistSection" class="space-y-6">
       
@@ -371,9 +354,16 @@
 
     let currentTracks = [...initialTracks];
 
-    // Initialize application
+    // Initialize application and auto-fetch your official ListenBrainz playlist
     window.onload = function() {
-      renderTracks(currentTracks);
+      const officialPlaylistMBID = "a77db2ef-67c9-4060-b4ae-b864e1b3f559"; 
+      
+      if (officialPlaylistMBID && officialPlaylistMBID !== "a77db2ef-67c9-4060-b4ae-b864e1b3f559") {
+        syncListenBrainz(officialPlaylistMBID);
+      } else {
+        renderTracks(currentTracks); // Fallback to hardcoded initialTracks if no MBID is set yet
+      }
+      
       lucide.createIcons();
     };
 
@@ -508,21 +498,14 @@
       openBtn.classList.remove('hidden');
     }
 
-    // ListenBrainz API Sync
-    function syncListenBrainz() {
-      const mbid = document.getElementById('mbidInput').value.trim();
-      if (!mbid) {
-        alert('Please enter a valid ListenBrainz Playlist MBID / UUID');
-        return;
-      }
-
-      const spinner = document.getElementById('syncSpinner');
-      spinner.classList.add('animate-spin');
+  // ListenBrainz API Sync (Updated to accept automatic background ID)
+    function syncListenBrainz(targetMbid) {
+      const mbid = targetMbid;
+      if (!mbid) return;
 
       fetch(`https://api.listenbrainz.org/1/playlist/${mbid}`)
         .then(res => res.json())
         .then(data => {
-          spinner.classList.remove('animate-spin');
           if (data && data.playlist && data.playlist.track) {
             currentTracks = data.playlist.track.map(item => ({
               title: item.title,
@@ -533,12 +516,11 @@
               isrc: item.identifier || ''
             }));
             renderTracks(currentTracks);
-            alert(`Successfully synced ${currentTracks.length} tracks from ListenBrainz!`);
           }
         })
         .catch(err => {
-          spinner.classList.remove('animate-spin');
-          alert('Failed to fetch from ListenBrainz. Check the MBID.');
+          console.error('Failed to auto-fetch from ListenBrainz, using local fallback tracks.', err);
+          renderTracks(currentTracks);
         });
     }
 
