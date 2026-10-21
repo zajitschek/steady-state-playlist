@@ -75,8 +75,8 @@
           <i data-lucide="sprout" class="w-6 h-6"></i>
         </div>
         <div>
-          <h1 class="font-bold text-lg leading-tight tracking-tight">Degrowth & Postgrowth Hub</h1>
-          <p class="text-xs text-earth-600 dark:text-earth-400">Decentralized Music Commons</p>
+          <h1 class="font-bold text-lg leading-tight tracking-tight">Steady State | Degrowth & Postgrowth Sound</h1>
+          <p class="text-xs text-earth-600 dark:text-earth-400">Music Playlist</p>
         </div>
       </div>
 
@@ -101,7 +101,7 @@
         <div class="inline-flex items-center gap-2 px-3 py-1 bg-leaf-700/10 dark:bg-leaf-400/10 text-leaf-700 dark:text-leaf-400 rounded-full text-xs font-medium border border-leaf-700/20">
           <i data-lucide="globe-2" class="w-3.5 h-3.5"></i> Global South Aware & Decolonized Commons
         </div>
-        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">De-commodifying sound. Reclaiming culture.</h2>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Sound. Movement. Culture</h2>
         <p class="text-earth-700 dark:text-earth-300 leading-relaxed text-sm sm:text-base">
            Music for the Now and for an empathic good future that is not necessarily behind corporate subscriptions. This site is an open, non-proprietary playlist platform.
         </p>
@@ -314,7 +314,7 @@
   <footer class="border-t border-earth-200 dark:border-earth-800 bg-earth-100/50 dark:bg-earth-900/50 py-8 text-center text-xs text-earth-600 dark:text-earth-400 space-y-2">
     <div class="flex items-center justify-center gap-2">
       <i data-lucide="sprout" class="w-4 h-4 text-leaf-600"></i>
-      <span class="font-semibold">Steady State Music Commons</span>
+      <span class="font-semibold">Steady State Sound</span>
     </div>
     <p>Public domain data. Non-proprietary. Hosted on GitHub Pages.</p>
   </footer>
@@ -596,7 +596,7 @@
     function openExportModal() { document.getElementById('exportModal').classList.remove('hidden'); }
     function closeExportModal() { document.getElementById('exportModal').classList.add('hidden'); }
 
-    function openPlayerModal(encodedTitle, encodedArtist) {
+        function openPlayerModal(encodedTitle, encodedArtist) {
       const title = decodeURIComponent(encodedTitle);
       const artist = decodeURIComponent(encodedArtist);
 
@@ -605,7 +605,7 @@
 
       const query = encodeURIComponent(`${artist} ${title}`);
       document.getElementById('playerActionLinks').innerHTML = `
-        <a href="https://invidious.io/search?q=${query}" target="_blank" class="p-2.5 bg-earth-200 dark:bg-earth-800 hover:bg-earth-300 rounded-lg text-xs font-semibold flex items-center justify-between">
+        <a href="https://yewtu.be/search?q=${query}" target="_blank" class="p-2.5 bg-earth-200 dark:bg-earth-800 hover:bg-earth-300 rounded-lg text-xs font-semibold flex items-center justify-between">
           <span>Search on Invidious (Privacy YouTube)</span>
           <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
         </a>
@@ -618,6 +618,7 @@
       document.getElementById('playerModal').classList.remove('hidden');
       lucide.createIcons();
     }
+
 
     function closePlayerModal() { document.getElementById('playerModal').classList.add('hidden'); }
 
