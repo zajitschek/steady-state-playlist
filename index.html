@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Steady State | Postgrowth | Degrowth | Buen Vivir Music </title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            earth: {
+              50: '#fbf8f3',
+              100: '#f4ede1',
+              200: '#e7d9c3',
+              300: '#d6be9c',
+              400: '#c29f74',
+              500: '#a88151',
+              600: '#8c663e',
+              700: '#6f4f32',
+              800: '#583f2a',
+              900: '#342316',
+              950: '#1c120a',
+            },
+            leaf: {
+              400: '#81c784',
+              500: '#4caf50',
+              600: '#388e3c',
+              700: '#2e7d32',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Bi-directional auto-alignment support */
+    [dir="auto"] {
+      unicode-bidi: plaintext;
+      text-align: start;
+    }
+    
+    /* Custom lightweight scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(168, 129, 81, 0.4);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(168, 129, 81, 0.8);
+    }
+  </style>
+</head>
+<body class="bg-earth-50 text-earth-950 dark:bg-earth-950 dark:text-earth-100 min-h-screen transition-colors duration-200 flex flex-col font-sans">
+
+  <!-- TOP HEADER / NAV -->
+  <header class="border-b border-earth-200 dark:border-earth-800 bg-earth-100/80 dark:bg-earth-900/80 backdrop-blur sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="p-2 bg-leaf-600 text-white rounded-lg">
+          <i data-lucide="sprout" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight tracking-tight">Degrowth & Postgrowth Hub</h1>
+          <p class="text-xs text-earth-600 dark:text-earth-400">Decentralized Music Commons</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="themeToggleBtn" onclick="toggleTheme()" class="p-2 rounded-lg border border-earth-300 dark:border-earth-700 hover:bg-earth-200 dark:hover:bg-earth-800 text-earth-700 dark:text-earth-300 transition-colors" title="Toggle Theme">
+          <i data-lucide="sun" id="sunIcon" class="w-5 h-5 hidden"></i>
+          <i data-lucide="moon" id="moonIcon" class="w-5 h-5"></i>
+        </button>
+        <a href="#submit" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-leaf-700 hover:bg-leaf-600 text-white text-xs font-semibold rounded-lg transition-colors">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i> Add Song
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+    <!-- FRAMING -->
+    <section class="bg-earth-100 dark:bg-earth-900/60 rounded-2xl p-6 sm:p-8 border border-earth-200 dark:border-earth-800 shadow-sm relative overflow-hidden">
+      <div class="relative z-10 max-w-3xl space-y-4">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-leaf-700/10 dark:bg-leaf-400/10 text-leaf-700 dark:text-leaf-400 rounded-full text-xs font-medium border border-leaf-700/20">
+          <i data-lucide="globe-2" class="w-3.5 h-3.5"></i> Global South Aware & Decolonized Commons
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">De-commodifying sound. Reclaiming culture.</h2>
+        <p class="text-earth-700 dark:text-earth-300 leading-relaxed text-sm sm:text-base">
+           Music for the Now and for an empathic good future that is not necessarily behind corporate subscriptions. This site is an open, non-proprietary playlist platform.
+        </p>
+        <div class="pt-2 flex flex-wrap gap-3">
+          <a href="#playlistSection" class="px-4 py-2 bg-earth-800 dark:bg-earth-200 text-earth-50 dark:text-earth-950 font-medium text-xs sm:text-sm rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2">
+            <i data-lucide="disc" class="w-4 h-4"></i> Explore Tracks (<span id="trackCountBadge">25</span>)
+          </a>
+          <button onclick="openExportModal()" class="px-4 py-2 border border-earth-300 dark:border-earth-700 hover:bg-earth-200 dark:hover:bg-earth-800 font-medium text-xs sm:text-sm rounded-xl transition-colors flex items-center gap-2">
+            <i data-lucide="download" class="w-4 h-4"></i> Export Formats (.jspf, .csv)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- LISTENBRAINZ API SYNC & CONTROLS -->
+    <section class="bg-earth-100/50 dark:bg-earth-900/30 rounded-xl p-4 border border-earth-200 dark:border-earth-800 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3 w-full md:w-auto">
+        <i data-lucide="radio" class="w-5 h-5 text-leaf-600 dark:text-leaf-400 shrink-0"></i>
+        <div class="text-xs">
+          <div class="font-semibold">ListenBrainz Live API Sync</div>
+          <div class="text-earth-600 dark:text-earth-400">Sync dynamically with open-data MusicBrainz metadata</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 w-full md:w-auto">
+        <input type="text" id="mbidInput" placeholder="ListenBrainz Playlist MBID / UUID..." class="flex-1 md:w-72 text-xs px-3 py-2 rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700 focus:outline-none focus:ring-1 focus:ring-leaf-500">
+        <button onclick="syncListenBrainz()" class="px-3 py-2 bg-earth-200 dark:bg-earth-800 hover:bg-earth-300 dark:hover:bg-earth-700 text-xs font-semibold rounded-lg transition-colors shrink-0 flex items-center gap-1.5">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5" id="syncSpinner"></i> Fetch
+        </button>
+      </div>
+    </section>
+
+    <!-- PLAYLIST EXPLORER & PLAYER -->
+    <section id="playlistSection" class="space-y-6">
+      
+      <!-- FILTER & SEARCH BAR -->
+      <div class="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
+        <div class="relative flex-1">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-earth-500"></i>
+          <input type="text" id="searchInput" oninput="filterTracks()" placeholder="Search title, artist, language, region, or keyword..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-earth-100 dark:bg-earth-900 border border-earth-300 dark:border-earth-800 text-sm focus:outline-none focus:ring-2 focus:ring-leaf-500">
+        </div>
+        <div class="flex items-center gap-2">
+          <select id="regionFilter" onchange="filterTracks()" class="px-3 py-2.5 rounded-xl bg-earth-100 dark:bg-earth-900 border border-earth-300 dark:border-earth-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-leaf-500">
+            <option value="">All Regions</option>
+            <option value="Global South">Global South</option>
+            <option value="Latin America">Latin America</option>
+            <option value="SWANA">SWANA (South West Asia / N. Africa)</option>
+            <option value="Asia / Pacific">Asia / Pacific</option>
+            <option value="Europe / North America">Europe / North America</option>
+          </select>
+          <select id="langFilter" onchange="filterTracks()" class="px-3 py-2.5 rounded-xl bg-earth-100 dark:bg-earth-900 border border-earth-300 dark:border-earth-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-leaf-500">
+            <option value="">All Languages</option>
+            <option value="Español">Español</option>
+            <option value="English">English</option>
+            <option value="العربية">العربية (Arabic)</option>
+            <option value="ไทย">ไทย (Thai)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- TRACKS TABLE / GRID -->
+      <div class="bg-earth-100/70 dark:bg-earth-900/50 rounded-2xl border border-earth-200 dark:border-earth-800 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-earth-200 dark:border-earth-800 bg-earth-200/50 dark:bg-earth-950/50 text-xs font-semibold text-earth-600 dark:text-earth-400 uppercase tracking-wider">
+                <th class="py-3 px-4 w-12 text-center">#</th>
+                <th class="py-3 px-4">Track & Artist</th>
+                <th class="py-3 px-4 hidden md:table-cell">Album</th>
+                <th class="py-3 px-4 hidden sm:table-cell">Language & Region</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="trackList" class="divide-y divide-earth-200 dark:divide-earth-800/60 text-sm">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+        </div>
+        <div id="noResults" class="hidden p-8 text-center text-earth-500 text-sm">
+          No tracks found matching your filter criteria.
+        </div>
+      </div>
+    </section>
+
+    <!-- COMMUNITY SUGGESTIONS SECTION (ALL 3 METHODS) -->
+    <section id="submit" class="space-y-6 pt-6">
+      <div class="border-b border-earth-200 dark:border-earth-800 pb-4">
+        <h2 class="text-2xl font-bold tracking-tight">Crowdsource & Contribute Songs</h2>
+        <p class="text-xs sm:text-sm text-earth-600 dark:text-earth-400">This site relies on participatory co-creation, especially to make it international and global. Use any of the three open methods below to expand this list.</p>
+      </div>
+
+      <!-- TAB BUTTONS -->
+      <div class="flex flex-wrap gap-2 border-b border-earth-200 dark:border-earth-800 pb-3">
+        <button id="tabBtn1" onclick="switchTab('form')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-leaf-700 text-white shadow-sm flex items-center gap-2">
+          <i data-lucide="form-input" class="w-4 h-4"></i> Method 1: Open Form
+        </button>
+        <button id="tabBtn2" onclick="switchTab('mastodon')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-earth-200 dark:bg-earth-800 hover:bg-earth-300 dark:hover:bg-earth-700 flex items-center gap-2">
+          <i data-lucide="share-2" class="w-4 h-4"></i> Method 2: Fediverse / Mastodon (#DegrowthPlaylist)
+        </button>
+        <button id="tabBtn3" onclick="switchTab('github')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-earth-200 dark:bg-earth-800 hover:bg-earth-300 dark:hover:bg-earth-700 flex items-center gap-2">
+          <i data-lucide="git-pull-request" class="w-4 h-4"></i> Method 3: GitHub Issue Generator
+        </button>
+      </div>
+
+      <!-- METHOD 1: OPEN FORM -->
+      <div id="methodForm" class="bg-earth-100 dark:bg-earth-900/60 p-6 rounded-2xl border border-earth-200 dark:border-earth-800 space-y-4">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="font-bold text-lg">Direct Submission Form</h3>
+            <p class="text-xs text-earth-600 dark:text-earth-400">Submissions are staged locally and formatted for easy inclusion into the repository.</p>
+          </div>
+          <span class="text-xs bg-leaf-500/10 text-leaf-600 dark:text-leaf-400 px-2.5 py-1 rounded-full border border-leaf-500/20 font-mono">Zero Corporate Tracking</span>
+        </div>
+
+        <form id="submissionForm" onsubmit="handleFormSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div>
+            <label class="block text-xs font-semibold mb-1">Track Title *</label>
+            <input type="text" id="formTitle" required dir="auto" placeholder="e.g. Li Beirut / Panik" class="w-full px-3 py-2 text-sm rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700 focus:outline-none focus:ring-1 focus:ring-leaf-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1">Artist Name *</label>
+            <input type="text" id="formArtist" required dir="auto" placeholder="e.g. Fairuz / Manu Chao" class="w-full px-3 py-2 text-sm rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700 focus:outline-none focus:ring-1 focus:ring-leaf-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1">Language / Script</label>
+            <input type="text" id="formLang" placeholder="e.g. Arabic (العربية), Spanish, Thai" class="w-full px-3 py-2 text-sm rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700 focus:outline-none focus:ring-1 focus:ring-leaf-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1">Region / Country</label>
+            <select id="formRegion" class="w-full px-3 py-2 text-sm rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700 focus:outline-none focus:ring-1 focus:ring-leaf-500">
+              <option value="Global South">Global South</option>
+              <option value="Latin America">Latin America</option>
+              <option value="SWANA">SWANA (South West Asia / N. Africa)</option>
+              <option value="Asia / Pacific">Asia / Pacific</option>
+              <option value="Europe / North America">Europe / North America</option>
+            </select>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold mb-1">Steady State / Postgrowth Rationale</label>
+            <textarea id="formRationale" rows="2" placeholder="Why does this track fit steady state, social justice, or ecological sustainability themes?" class="w-full px-3 py-2 text-sm rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700 focus:outline-none focus:ring-1 focus:ring-leaf-500"></textarea>
+          </div>
+          <div class="md:col-span-2 flex justify-end">
+            <button type="submit" class="px-5 py-2.5 bg-leaf-700 hover:bg-leaf-600 text-white font-semibold text-xs sm:text-sm rounded-xl transition-colors flex items-center gap-2">
+              <i data-lucide="send" class="w-4 h-4"></i> Stage & Format Submission
+            </button>
+          </div>
+        </form>
+
+        <div id="stagedOutput" class="hidden pt-4 border-t border-earth-200 dark:border-earth-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-leaf-600 dark:text-leaf-400">✓ Formatted Track Data Ready</span>
+            <button onclick="copyStagedData()" class="text-xs bg-earth-200 dark:bg-earth-800 hover:bg-earth-300 px-2.5 py-1 rounded flex items-center gap-1">
+              <i data-lucide="copy" class="w-3 h-3"></i> Copy JSON
+            </button>
+          </div>
+          <pre id="stagedJson" class="p-3 bg-earth-950 text-earth-100 rounded-lg text-xs font-mono overflow-x-auto"></pre>
+        </div>
+      </div>
+
+      <!-- METHOD 2: FEDIVERSE / MASTODON FETCH -->
+      <div id="methodMastodon" class="hidden bg-earth-100 dark:bg-earth-900/60 p-6 rounded-2xl border border-earth-200 dark:border-earth-800 space-y-4">
+        <div>
+          <h3 class="font-bold text-lg">Live Fediverse Recommendations</h3>
+          <p class="text-xs text-earth-600 dark:text-earth-400">Post a song on Mastodon or any Fediverse server using the hashtag <span class="font-mono text-leaf-600 dark:text-leaf-400 font-bold">#DegrowthPlaylist</span> to appear below automatically.</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input type="text" id="mastoInstance" value="mastodon.social" placeholder="Instance domain (e.g. mastodon.social, scholar.social)" class="px-3 py-2 text-xs rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700 flex-1">
+          <button onclick="fetchMastodonPosts()" class="px-4 py-2 bg-earth-800 dark:bg-earth-200 text-earth-50 dark:text-earth-950 text-xs font-semibold rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5" id="mastoSpinner"></i> Fetch #DegrowthPlaylist
+          </button>
+        </div>
+
+        <div id="mastoPostsContainer" class="space-y-3 pt-2 max-h-80 overflow-y-auto pr-1">
+          <p class="text-xs text-earth-500 italic text-center py-4">Click "Fetch" to search the Fediverse for community recommendations.</p>
+        </div>
+      </div>
+
+      <!-- METHOD 3: GITHUB ISSUE / PR GENERATOR -->
+      <div id="methodGithub" class="hidden bg-earth-100 dark:bg-earth-900/60 p-6 rounded-2xl border border-earth-200 dark:border-earth-800 space-y-4">
+        <div>
+          <h3 class="font-bold text-lg">GitHub / Codeberg Request Generator</h3>
+          <p class="text-xs text-earth-600 dark:text-earth-400">Generate a clean Markdown issue block to submit directly to our code repository.</p>
+        </div>
+
+        <div class="space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <input type="text" id="ghTitle" placeholder="Track Title" class="px-3 py-2 text-xs rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700">
+            <input type="text" id="ghArtist" placeholder="Artist" class="px-3 py-2 text-xs rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700">
+          </div>
+          <textarea id="ghContext" rows="2" placeholder="Brief rationale or web link (Bandcamp/Invidious)..." class="w-full px-3 py-2 text-xs rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700"></textarea>
+          
+          <div class="flex justify-between items-center pt-2">
+            <button onclick="generateGhMarkdown()" class="px-4 py-2 bg-leaf-700 hover:bg-leaf-600 text-white font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5">
+              <i data-lucide="code" class="w-3.5 h-3.5"></i> Build Issue Snippet
+            </button>
+            <a id="openGhBtn" href="https://github.com" target="_blank" class="hidden text-xs text-leaf-600 dark:text-leaf-400 hover:underline font-semibold flex items-center gap-1">
+              Open Issue on GitHub <i data-lucide="external-link" class="w-3 h-3"></i>
+            </a>
+          </div>
+
+          <pre id="ghMarkdownOutput" class="hidden p-3 bg-earth-950 text-earth-100 rounded-lg text-xs font-mono overflow-x-auto whitespace-pre-wrap"></pre>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-earth-200 dark:border-earth-800 bg-earth-100/50 dark:bg-earth-900/50 py-8 text-center text-xs text-earth-600 dark:text-earth-400 space-y-2">
+    <div class="flex items-center justify-center gap-2">
+      <i data-lucide="sprout" class="w-4 h-4 text-leaf-600"></i>
+      <span class="font-semibold">Steady State Music Commons</span>
+    </div>
+    <p>Public domain data. Non-proprietary. Hosted on GitHub Pages.</p>
+  </footer>
+
+  <!-- EXPORT MODAL -->
+  <div id="exportModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-earth-50 dark:bg-earth-900 border border-earth-300 dark:border-earth-700 rounded-2xl max-w-lg w-full p-6 space-y-5 relative shadow-xl">
+      <button onclick="closeExportModal()" class="absolute top-4 right-4 text-earth-500 hover:text-earth-800 dark:hover:text-earth-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div>
+        <h3 class="font-bold text-lg">Export Playlist Data</h3>
+        <p class="text-xs text-earth-600 dark:text-earth-400">Vendor-neutral playlist formats for universal access.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button onclick="downloadJSPF()" class="p-3 bg-earth-100 dark:bg-earth-800 hover:bg-earth-200 dark:hover:bg-earth-700 rounded-xl border border-earth-200 dark:border-earth-700 text-left space-y-1 transition-colors">
+          <div class="font-semibold text-xs flex items-center gap-1.5"><i data-lucide="file-json" class="w-4 h-4 text-leaf-600"></i> Download JSPF</div>
+          <p class="text-[10px] text-earth-600 dark:text-earth-400">Open JSON shareable format for ListenBrainz & MusicBrainz</p>
+        </button>
+        <button onclick="copyCSV()" class="p-3 bg-earth-100 dark:bg-earth-800 hover:bg-earth-200 dark:hover:bg-earth-700 rounded-xl border border-earth-200 dark:border-earth-700 text-left space-y-1 transition-colors">
+          <div class="font-semibold text-xs flex items-center gap-1.5"><i data-lucide="file-text" class="w-4 h-4 text-leaf-600"></i> Copy CSV</div>
+          <p class="text-[10px] text-earth-600 dark:text-earth-400">Table format for spreadsheet or converter tool import</p>
+        </button>
+      </div>
+
+      <div class="border-t border-earth-200 dark:border-earth-800 pt-4 space-y-2">
+        <h4 class="text-xs font-bold">Transfer to Proprietary Apps (Apple / Spotify / Tidal)</h4>
+        <p class="text-xs text-earth-600 dark:text-earth-400 leading-relaxed">
+          Copy the CSV data above and paste it into free converters like <strong>TuneMyMusic</strong> or <strong>Soundiiz</strong> to import this playlist into Apple Music or Spotify without platform lock-in.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAYER / SEARCH MODAL -->
+  <div id="playerModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-earth-50 dark:bg-earth-900 border border-earth-300 dark:border-earth-700 rounded-2xl max-w-lg w-full p-6 space-y-4 relative shadow-xl">
+      <button onclick="closePlayerModal()" class="absolute top-4 right-4 text-earth-500 hover:text-earth-800 dark:hover:text-earth-200">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div>
+        <h3 id="modalTrackTitle" class="font-bold text-lg" dir="auto">Track Title</h3>
+        <p id="modalTrackArtist" class="text-xs text-earth-600 dark:text-earth-400" dir="auto">Artist Name</p>
+      </div>
+
+      <div class="p-4 bg-earth-100 dark:bg-earth-950 rounded-xl space-y-3">
+        <p class="text-xs text-earth-600 dark:text-earth-400">Choose a privacy-friendly, open audio source:</p>
+        <div class="flex flex-col gap-2" id="playerActionLinks">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION LOGIC -->
+  <script>
+    // Initial 25 tracks with steady state context & script support
+    const initialTracks = [
+      { title: "Panik Panik", artist: "Manu Chao", album: "La Radiolina", lang: "Español", region: "Global South", isrc: "FR84R0700060" },
+      { title: "Money", artist: "Pink Floyd", album: "The Dark Side of the Moon", lang: "English", region: "Europe / North America", isrc: "GBN9Y2200020" },
+      { title: "Sheep", artist: "Pink Floyd", album: "Animals", lang: "English", region: "Europe / North America", isrc: "GBN9Y1100093" },
+      { title: "Señor Matanza", artist: "Mano Negra", album: "Casa Babylon", lang: "Español", region: "Latin America", isrc: "FRZ189800147" },
+      { title: "A Desalambrar", artist: "Victor Jara", album: "Pongo en Tus Manos Abiertas", lang: "Español", region: "Latin America", isrc: "FR10S1486124" },
+      { title: "Man and Buffalo (Kon Gap Kwai)", artist: "Caravan", album: "Thailand: Songs for Life", lang: "ไทย", region: "Asia / Pacific", isrc: "USSF17804201" },
+      { title: "The Numbers", artist: "Radiohead", album: "A Moon Shaped Pool", lang: "English", region: "Europe / North America", isrc: "GBBKS1600078" },
+      { title: "Dead Fox", artist: "Courtney Barnett", album: "Sometimes I Sit and Think...", lang: "English", region: "Asia / Pacific", isrc: "GBX721400149" },
+      { title: "Melt!", artist: "Kelly Lee Owens", album: "Inner Song", lang: "English", region: "Europe / North America", isrc: "NOSTS2072030" },
+      { title: "Re-Wild", artist: "Kelly Lee Owens", album: "Inner Song", lang: "English", region: "Europe / North America", isrc: "NOSTS2072040" },
+      { title: "they told us it was hard, but they were wrong.", artist: "Ela Minus", album: "acts of rebellion", lang: "Español / English", region: "Latin America", isrc: "GBCEL1900514" },
+      { title: "Sumak Kawsay", artist: "Kalfumalén", album: "El Buen Vivir", lang: "Español / Mapudungun", region: "Latin America", isrc: "USCGH2235605" },
+      { title: "Al sistema no le conviene", artist: "Che Sudaka ft. Noel Petro", album: "Hoy", lang: "Español", region: "Latin America", isrc: "ES67I1400031" },
+      { title: "Rät", artist: "Penelope Scott", album: "Public Void", lang: "English", region: "Europe / North America", isrc: "QZK6F2019397" },
+      { title: "Ring of Fire", artist: "Country Joe McDonald", album: "Best of Country Joe", lang: "English", region: "Europe / North America", isrc: "USVG29050598" },
+      { title: "Voodoo Child (Slight Return)", artist: "The Jimi Hendrix Experience", album: "Electric Ladyland", lang: "English", region: "Europe / North America", isrc: "USQX90900750" },
+      { title: "A Kiss for the Whole World x", artist: "Enter Shikari", album: "A Kiss for the Whole World", lang: "English", region: "Europe / North America", isrc: "GBAJC2300004" },
+      { title: "Planet B", artist: "King Gizzard & The Lizard Wizard", album: "Infest the Rats' Nest", lang: "English", region: "Asia / Pacific", isrc: "AUTZK1900026" },
+      { title: "The Seed", artist: "AURORA", album: "A Different Kind of Human", lang: "English", region: "Europe / North America", isrc: "GBUM71808078" },
+      { title: "4 American Dollars", artist: "U.S. Girls", album: "Heavy Light", lang: "English", region: "Europe / North America", isrc: "GBAFL1900389" },
+      { title: "Threatening Each Other re: Capitalism", artist: "illuminati hotties", album: "Let Me Do One More", lang: "English", region: "Europe / North America", isrc: "USHR22114804" },
+      { title: "Anti-Capitalist (be so loving)", artist: "Álán Zapata ft. Chaos In The CBD", album: "Anti-Capitalist", lang: "English", region: "Global South", isrc: "QZMEP2538276" },
+      { title: "Progress Train", artist: "Peggy Seeger", album: "Celebrating Subversion", lang: "English", region: "Europe / North America", isrc: "USFVZ1350021" },
+      { title: "Work", artist: "Iggy Azalea", album: "The New Classic", lang: "English", region: "Europe / North America", isrc: "GBUM71301347" },
+      { title: "Fight The Power", artist: "Public Enemy", album: "Fear of a Black Planet", lang: "English", region: "Global South", isrc: "USDJ20200160" }
+    ];
+
+    let currentTracks = [...initialTracks];
+
+    // Initialize application
+    window.onload = function() {
+      renderTracks(currentTracks);
+      lucide.createIcons();
+    };
+
+    // Render tracks table
+    function renderTracks(tracks) {
+      const tbody = document.getElementById('trackList');
+      const noResults = document.getElementById('noResults');
+      document.getElementById('trackCountBadge').innerText = tracks.length;
+
+      if (tracks.length === 0) {
+        tbody.innerHTML = '';
+        noResults.classList.remove('hidden');
+        return;
+      }
+
+      noResults.classList.add('hidden');
+      tbody.innerHTML = tracks.map((t, idx) => `
+        <tr class="hover:bg-earth-200/40 dark:hover:bg-earth-800/40 transition-colors">
+          <td class="py-3.5 px-4 text-center font-mono text-xs text-earth-500">${idx + 1}</td>
+          <td class="py-3.5 px-4">
+            <div class="font-medium text-earth-900 dark:text-earth-100" dir="auto">${t.title}</div>
+            <div class="text-xs text-earth-600 dark:text-earth-400" dir="auto">${t.artist}</div>
+          </td>
+          <td class="py-3.5 px-4 hidden md:table-cell text-xs text-earth-600 dark:text-earth-400" dir="auto">${t.album || '—'}</td>
+          <td class="py-3.5 px-4 hidden sm:table-cell">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] bg-earth-200 dark:bg-earth-800 text-earth-800 dark:text-earth-200">${t.lang}</span>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] bg-leaf-500/10 text-leaf-700 dark:text-leaf-400">${t.region}</span>
+          </td>
+          <td class="py-3.5 px-4 text-right">
+            <button onclick="openPlayerModal('${encodeURIComponent(t.title)}', '${encodeURIComponent(t.artist)}')" class="px-2.5 py-1 bg-leaf-700/10 hover:bg-leaf-700/20 text-leaf-700 dark:text-leaf-400 rounded-lg text-xs font-semibold transition-colors inline-flex items-center gap-1">
+              <i data-lucide="play" class="w-3 h-3"></i> Listen
+            </button>
+          </td>
+        </tr>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    // Filter tracks
+    function filterTracks() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const region = document.getElementById('regionFilter').value;
+      const lang = document.getElementById('langFilter').value;
+
+      const filtered = currentTracks.filter(t => {
+        const matchesQ = t.title.toLowerCase().includes(q) || t.artist.toLowerCase().includes(q) || t.album.toLowerCase().includes(q);
+        const matchesRegion = !region || t.region === region;
+        const matchesLang = !lang || t.lang.includes(lang);
+        return matchesQ && matchesRegion && matchesLang;
+      });
+
+      renderTracks(filtered);
+    }
+
+    // Tab switching for submissions
+    function switchTab(tab) {
+      document.getElementById('methodForm').classList.add('hidden');
+      document.getElementById('methodMastodon').classList.add('hidden');
+      document.getElementById('methodGithub').classList.add('hidden');
+
+      document.getElementById('tabBtn1').className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-earth-200 dark:bg-earth-800 flex items-center gap-2";
+      document.getElementById('tabBtn2').className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-earth-200 dark:bg-earth-800 flex items-center gap-2";
+      document.getElementById('tabBtn3').className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-earth-200 dark:bg-earth-800 flex items-center gap-2";
+
+      if (tab === 'form') {
+        document.getElementById('methodForm').classList.remove('hidden');
+        document.getElementById('tabBtn1').className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-leaf-700 text-white flex items-center gap-2";
+      } else if (tab === 'mastodon') {
+        document.getElementById('methodMastodon').classList.remove('hidden');
+        document.getElementById('tabBtn2').className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-leaf-700 text-white flex items-center gap-2";
+      } else {
+        document.getElementById('methodGithub').classList.remove('hidden');
+        document.getElementById('tabBtn3').className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-leaf-700 text-white flex items-center gap-2";
+      }
+    }
+
+    // Form submission handler
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const newTrack = {
+        title: document.getElementById('formTitle').value,
+        artist: document.getElementById('formArtist').value,
+        lang: document.getElementById('formLang').value || 'Universal',
+        region: document.getElementById('formRegion').value,
+        rationale: document.getElementById('formRationale').value
+      };
+
+      document.getElementById('stagedJson').innerText = JSON.stringify(newTrack, null, 2);
+      document.getElementById('stagedOutput').classList.remove('hidden');
+    }
+
+    function copyStagedData() {
+      const text = document.getElementById('stagedJson').innerText;
+      copyToClipboard(text);
+      alert('Staged submission copied to clipboard!');
+    }
+
+    // Fetch live Mastodon posts
+    function fetchMastodonPosts() {
+      const instance = document.getElementById('mastoInstance').value.trim() || 'mastodon.social';
+      const container = document.getElementById('mastoPostsContainer');
+      const spinner = document.getElementById('mastoSpinner');
+
+      spinner.classList.add('animate-spin');
+      container.innerHTML = '<p class="text-xs text-earth-500 italic text-center py-4">Searching #DegrowthPlaylist on ' + instance + '...</p>';
+
+      fetch(`https://${instance}/api/v1/timelines/tag/DegrowthPlaylist?limit=5`)
+        .then(res => res.json())
+        .then(posts => {
+          spinner.classList.remove('animate-spin');
+          if (!posts || posts.length === 0) {
+            container.innerHTML = '<p class="text-xs text-earth-500 italic text-center py-4">No recent posts found with #DegrowthPlaylist on this instance.</p>';
+            return;
+          }
+
+          container.innerHTML = posts.map(p => `
+            <div class="p-3 bg-earth-50 dark:bg-earth-950 rounded-xl border border-earth-200 dark:border-earth-800 text-xs space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-leaf-600 dark:text-leaf-400">@${p.account.acct}</span>
+                <a href="${p.url}" target="_blank" class="text-[10px] text-earth-500 hover:underline">View Post</a>
+              </div>
+              <div class="text-earth-700 dark:text-earth-300" dir="auto">${p.content}</div>
+            </div>
+          `).join('');
+        })
+        .catch(err => {
+          spinner.classList.remove('animate-spin');
+          container.innerHTML = '<p class="text-xs text-red-500 text-center py-4">Could not connect to instance. Try mastodon.social or scholar.social.</p>';
+        });
+    }
+
+    // Build GitHub Issue Markdown
+    function generateGhMarkdown() {
+      const title = document.getElementById('ghTitle').value;
+      const artist = document.getElementById('ghArtist').value;
+      const ctx = document.getElementById('ghContext').value;
+
+      if (!title || !artist) {
+        alert('Please fill in Track Title and Artist');
+        return;
+      }
+
+      const md = `### New Degrowth Song Suggestion\n- **Track:** ${title}\n- **Artist:** ${artist}\n- **Rationale/Context:** ${ctx || 'N/A'}`;
+      document.getElementById('ghMarkdownOutput').innerText = md;
+      document.getElementById('ghMarkdownOutput').classList.remove('hidden');
+
+      const openBtn = document.getElementById('openGhBtn');
+      openBtn.href = `https://github.com/new?title=${encodeURIComponent('Song Suggestion: ' + title)}&body=${encodeURIComponent(md)}`;
+      openBtn.classList.remove('hidden');
+    }
+
+    // ListenBrainz API Sync
+    function syncListenBrainz() {
+      const mbid = document.getElementById('mbidInput').value.trim();
+      if (!mbid) {
+        alert('Please enter a valid ListenBrainz Playlist MBID / UUID');
+        return;
+      }
+
+      const spinner = document.getElementById('syncSpinner');
+      spinner.classList.add('animate-spin');
+
+      fetch(`https://api.listenbrainz.org/1/playlist/${mbid}`)
+        .then(res => res.json())
+        .then(data => {
+          spinner.classList.remove('animate-spin');
+          if (data && data.playlist && data.playlist.track) {
+            currentTracks = data.playlist.track.map(item => ({
+              title: item.title,
+              artist: item.creator,
+              album: item.album || 'ListenBrainz Sync',
+              lang: 'Universal',
+              region: 'Global',
+              isrc: item.identifier || ''
+            }));
+            renderTracks(currentTracks);
+            alert(`Successfully synced ${currentTracks.length} tracks from ListenBrainz!`);
+          }
+        })
+        .catch(err => {
+          spinner.classList.remove('animate-spin');
+          alert('Failed to fetch from ListenBrainz. Check the MBID.');
+        });
+    }
+
+    // Modals & Export Logic
+    function openExportModal() { document.getElementById('exportModal').classList.remove('hidden'); }
+    function closeExportModal() { document.getElementById('exportModal').classList.add('hidden'); }
+
+    function openPlayerModal(encodedTitle, encodedArtist) {
+      const title = decodeURIComponent(encodedTitle);
+      const artist = decodeURIComponent(encodedArtist);
+
+      document.getElementById('modalTrackTitle').innerText = title;
+      document.getElementById('modalTrackArtist').innerText = artist;
+
+      const query = encodeURIComponent(`${artist} ${title}`);
+      document.getElementById('playerActionLinks').innerHTML = `
+        <a href="https://invidious.io/search?q=${query}" target="_blank" class="p-2.5 bg-earth-200 dark:bg-earth-800 hover:bg-earth-300 rounded-lg text-xs font-semibold flex items-center justify-between">
+          <span>Search on Invidious (Privacy YouTube)</span>
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        </a>
+        <a href="https://bandcamp.com/search?q=${query}" target="_blank" class="p-2.5 bg-earth-200 dark:bg-earth-800 hover:bg-earth-300 rounded-lg text-xs font-semibold flex items-center justify-between">
+          <span>Search on Bandcamp (Direct Artist Support)</span>
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        </a>
+      `;
+
+      document.getElementById('playerModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closePlayerModal() { document.getElementById('playerModal').classList.add('hidden'); }
+
+    function downloadJSPF() {
+      const jspf = {
+        playlist: {
+          title: "Degrowth & Postgrowth Playlist",
+          creator: "Community",
+          track: currentTracks.map(t => ({
+            title: t.title,
+            creator: t.artist,
+            album: t.album,
+            identifier: t.isrc ? `urn:isrc:${t.isrc}` : undefined
+          }))
+        }
+      };
+
+      const blob = new Blob([JSON.stringify(jspf, null, 2)], { type: 'application/jspf+json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'degrowth_playlist.jspf';
+      a.click();
+    }
+
+    function copyCSV() {
+      let csv = 'Title,Artist,Album,Language,Region\n';
+      currentTracks.forEach(t => {
+        csv += `"${t.title}","${t.artist}","${t.album}","${t.lang}","${t.region}"\n`;
+      });
+      copyToClipboard(csv);
+      alert('CSV copied to clipboard!');
+    }
+
+    function copyToClipboard(text) {
+      const dummy = document.createElement("textarea");
+      document.body.appendChild(dummy);
+      dummy.value = text;
+      dummy.select();
+      document.execCommand("copy");
+      document.body.removeChild(dummy);
+    }
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      const isDark = document.documentElement.classList.contains('dark');
+      document.getElementById('sunIcon').classList.toggle('hidden', !isDark);
+      document.getElementById('moonIcon').classList.toggle('hidden', isDark);
+    }
+  </script>
+</body>
+</html>
