@@ -188,8 +188,8 @@
     <!-- COMMUNITY SUGGESTIONS SECTION (ALL 3 METHODS) -->
     <section id="submit" class="space-y-6 pt-6">
       <div class="border-b border-earth-200 dark:border-earth-800 pb-4">
-        <h2 class="text-2xl font-bold tracking-tight">Crowdsource & Contribute Songs</h2>
-        <p class="text-xs sm:text-sm text-earth-600 dark:text-earth-400">This site relies on participatory co-creation, especially to make it international and global. Use any of the three open methods below to expand this list.</p>
+        <h2 class="text-2xl font-bold tracking-tight">Contribute Songs</h2>
+        <p class="text-xs sm:text-sm text-earth-600 dark:text-earth-400">This site relies on participaton, especially to make it international and global. Use any of the three methods below to grow this list.</p>
       </div>
 
       <!-- TAB BUTTONS -->
@@ -462,24 +462,28 @@
     }
 
     // Tab switching for submissions
-    function switchTab(tab) {
+      function switchTab(tab) {
       document.getElementById('methodForm').classList.add('hidden');
       document.getElementById('methodMastodon').classList.add('hidden');
       document.getElementById('methodGithub').classList.add('hidden');
 
-      document.getElementById('tabBtn1').className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-earth-200 dark:bg-earth-800 flex items-center gap-2";
-      document.getElementById('tabBtn2').className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-earth-200 dark:bg-earth-800 flex items-center gap-2";
-      document.getElementById('tabBtn3').className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-earth-200 dark:bg-earth-800 flex items-center gap-2";
+      // Reset all buttons to inactive state with left alignment (w-full sm:w-auto text-left)
+      const inactiveClass = "w-full sm:w-auto text-left px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-earth-200 dark:bg-earth-800 hover:bg-earth-300 dark:hover:bg-earth-700 flex items-center justify-start gap-2";
+      const activeClass = "w-full sm:w-auto text-left px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-leaf-700 text-white shadow-sm flex items-center justify-start gap-2";
+
+      document.getElementById('tabBtn1').className = inactiveClass;
+      document.getElementById('tabBtn2').className = inactiveClass;
+      document.getElementById('tabBtn3').className = inactiveClass;
 
       if (tab === 'form') {
         document.getElementById('methodForm').classList.remove('hidden');
-        document.getElementById('tabBtn1').className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-leaf-700 text-white flex items-center gap-2";
+        document.getElementById('tabBtn1').className = activeClass;
       } else if (tab === 'mastodon') {
         document.getElementById('methodMastodon').classList.remove('hidden');
-        document.getElementById('tabBtn2').className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-leaf-700 text-white flex items-center gap-2";
+        document.getElementById('tabBtn2').className = activeClass;
       } else {
         document.getElementById('methodGithub').classList.remove('hidden');
-        document.getElementById('tabBtn3').className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-leaf-700 text-white flex items-center gap-2";
+        document.getElementById('tabBtn3').className = activeClass;
       }
     }
 
