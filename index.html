@@ -189,7 +189,7 @@
     <section id="submit" class="space-y-6 pt-6">
       <div class="border-b border-earth-200 dark:border-earth-800 pb-4">
         <h2 class="text-2xl font-bold tracking-tight">Contribute Songs</h2>
-        <p class="text-xs sm:text-sm text-earth-600 dark:text-earth-400">This site relies on participaton, especially to make it international and global. Use any of the three methods below to grow this list.</p>
+        <p class="text-xs sm:text-sm text-earth-600 dark:text-earth-400">This site relies on participation, especially to make it international and global. Use any of the three methods below to grow this list.</p>
       </div>
 
       <!-- TAB BUTTONS -->
@@ -205,8 +205,7 @@
         </button>
       </div>
 
-
-     <!-- METHOD 1: CRYPTPAD PRIVACY FORM -->
+      <!-- METHOD 1: CRYPTPAD PRIVACY FORM -->
       <div id="methodForm" class="bg-earth-100 dark:bg-earth-900/60 p-4 sm:p-6 rounded-2xl border border-earth-200 dark:border-earth-800 space-y-4">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-earth-200 dark:border-earth-800 pb-3">
           <div>
@@ -226,51 +225,6 @@
             loading="lazy"
             title="Degrowth Playlist Track Suggestion Form">
           </iframe>
-        </div>
-      </div>
-
-        <form id="submissionForm" onsubmit="handleFormSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-          <div>
-            <label class="block text-xs font-semibold mb-1">Track Title *</label>
-            <input type="text" id="formTitle" required dir="auto" placeholder="e.g. Li Beirut / Panik" class="w-full px-3 py-2 text-sm rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700 focus:outline-none focus:ring-1 focus:ring-leaf-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold mb-1">Artist Name *</label>
-            <input type="text" id="formArtist" required dir="auto" placeholder="e.g. Fairuz / Manu Chao" class="w-full px-3 py-2 text-sm rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700 focus:outline-none focus:ring-1 focus:ring-leaf-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold mb-1">Language / Script</label>
-            <input type="text" id="formLang" placeholder="e.g. Arabic (العربية), Spanish, Thai" class="w-full px-3 py-2 text-sm rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700 focus:outline-none focus:ring-1 focus:ring-leaf-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold mb-1">Region / Country</label>
-            <select id="formRegion" class="w-full px-3 py-2 text-sm rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700 focus:outline-none focus:ring-1 focus:ring-leaf-500">
-              <option value="Global South">Global South</option>
-              <option value="Latin America">Latin America</option>
-              <option value="SWANA">SWANA (South West Asia / N. Africa)</option>
-              <option value="Asia / Pacific">Asia / Pacific</option>
-              <option value="Europe / North America">Europe / North America</option>
-            </select>
-          </div>
-          <div class="md:col-span-2">
-            <label class="block text-xs font-semibold mb-1">Steady State / Postgrowth Rationale</label>
-            <textarea id="formRationale" rows="2" placeholder="Why does this track fit steady state, social justice, or ecological sustainability themes?" class="w-full px-3 py-2 text-sm rounded-lg bg-earth-50 dark:bg-earth-950 border border-earth-300 dark:border-earth-700 focus:outline-none focus:ring-1 focus:ring-leaf-500"></textarea>
-          </div>
-          <div class="md:col-span-2 flex justify-end">
-            <button type="submit" class="px-5 py-2.5 bg-leaf-700 hover:bg-leaf-600 text-white font-semibold text-xs sm:text-sm rounded-xl transition-colors flex items-center gap-2">
-              <i data-lucide="send" class="w-4 h-4"></i> Stage & Format Submission
-            </button>
-          </div>
-        </form>
-
-        <div id="stagedOutput" class="hidden pt-4 border-t border-earth-200 dark:border-earth-800 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-leaf-600 dark:text-leaf-400">✓ Formatted Track Data Ready</span>
-            <button onclick="copyStagedData()" class="text-xs bg-earth-200 dark:bg-earth-800 hover:bg-earth-300 px-2.5 py-1 rounded flex items-center gap-1">
-              <i data-lucide="copy" class="w-3 h-3"></i> Copy JSON
-            </button>
-          </div>
-          <pre id="stagedJson" class="p-3 bg-earth-950 text-earth-100 rounded-lg text-xs font-mono overflow-x-auto"></pre>
         </div>
       </div>
 
@@ -476,7 +430,7 @@
     }
 
     // Tab switching for submissions
-          function switchTab(tab) {
+    function switchTab(tab) {
       document.getElementById('methodForm').classList.add('hidden');
       document.getElementById('methodMastodon').classList.add('hidden');
       document.getElementById('methodGithub').classList.add('hidden');
@@ -498,27 +452,6 @@
         document.getElementById('methodGithub').classList.remove('hidden');
         document.getElementById('tabBtn3').className = activeClass;
       }
-    }
-
-    // Form submission handler
-    function handleFormSubmit(e) {
-      e.preventDefault();
-      const newTrack = {
-        title: document.getElementById('formTitle').value,
-        artist: document.getElementById('formArtist').value,
-        lang: document.getElementById('formLang').value || 'Universal',
-        region: document.getElementById('formRegion').value,
-        rationale: document.getElementById('formRationale').value
-      };
-
-      document.getElementById('stagedJson').innerText = JSON.stringify(newTrack, null, 2);
-      document.getElementById('stagedOutput').classList.remove('hidden');
-    }
-
-    function copyStagedData() {
-      const text = document.getElementById('stagedJson').innerText;
-      copyToClipboard(text);
-      alert('Staged submission copied to clipboard!');
     }
 
     // Fetch live Mastodon posts
@@ -613,7 +546,7 @@
     function openExportModal() { document.getElementById('exportModal').classList.remove('hidden'); }
     function closeExportModal() { document.getElementById('exportModal').classList.add('hidden'); }
 
-        function openPlayerModal(encodedTitle, encodedArtist) {
+    function openPlayerModal(encodedTitle, encodedArtist) {
       const title = decodeURIComponent(encodedTitle);
       const artist = decodeURIComponent(encodedArtist);
 
@@ -635,7 +568,6 @@
       document.getElementById('playerModal').classList.remove('hidden');
       lucide.createIcons();
     }
-
 
     function closePlayerModal() { document.getElementById('playerModal').classList.add('hidden'); }
 
